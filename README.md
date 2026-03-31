@@ -344,6 +344,3 @@ Before deploying to production, add:
 - containerization and deployment config
 - stronger auth and token management policies
 
-## License
-
-This repository currently has no license file. Add one if you plan to distribute or open-source it formally.
