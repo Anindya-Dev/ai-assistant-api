@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 from services.rag_services import handle_query
 from services.auth_service import get_current_user
-from services.history_service import get_user_history
+from services.history_service import get_user_history, save_user_history
 from db.database import SessionLocal
 from db.models import User
 from services.auth_service import hash_password
