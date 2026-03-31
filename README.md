@@ -19,6 +19,7 @@ The application uses SQLite for relational data, ChromaDB for vector search, Sen
 - FastAPI-based REST API
 - JWT authentication with bearer tokens
 - Personal journal entry storage
+- LLM-based query routing for personal-memory vs direct-answer paths
 - User-scoped semantic retrieval with ChromaDB metadata filtering
 - RAG-style answer generation over stored journal entries
 - Query rewrite retry loop for retrieval recovery
@@ -31,7 +32,7 @@ High-level request flow:
 
 1. Client sends a request to the API.
 2. FastAPI validates payloads and authenticates protected routes.
-3. The service layer decides whether to use journal retrieval or direct generation.
+3. An LLM router decides whether the query should use journal retrieval or direct generation.
 4. Journal queries are embedded and searched in ChromaDB.
 5. Matching journal content is injected into a grounded prompt.
 6. Groq generates the final answer.
@@ -213,7 +214,7 @@ Response:
 
 ### `POST /ask`
 
-Ask the assistant a question. If the query looks personal, the API tries journal retrieval first; otherwise it falls back to direct generation.
+Ask the assistant a question. An LLM router first decides whether the query needs personal journal retrieval or a direct answer.
 
 Headers:
 
@@ -289,7 +290,7 @@ Example response:
 
 Current retrieval flow:
 
-- route queries through a lightweight rule in `agents/agent.py`
+- route queries through an LLM-based router in `agents/agent.py`
 - embed the query with `all-MiniLM-L6-v2`
 - search ChromaDB with `user_id` filtering
 - retry with rewritten queries when the first attempt is weak
@@ -297,7 +298,7 @@ Current retrieval flow:
 
 Important implementation note:
 
-- query routing is currently heuristic-based, not a full autonomous tool-calling agent
+- query routing is LLM-based with constrained `search` or `direct` outputs, not a hardcoded keyword matcher
 
 ## Local Data
 

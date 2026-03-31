@@ -1,13 +1,22 @@
-def run_agent(query: str):
-    query_lower=query.lower()
+from services.llm_service import generate_response
 
-    if "my" in query_lower or "did i" in query_lower:
-        return{
-            "tool":"search_documents",
-            "query":query
-        }
+def run_agent(query: str):
+    routing_prompt = f"""You are a query router.
+
+Decide whether this query needs personal journal/memory search or a direct answer.
+
+Query: "{query}"
+
+Reply with exactly one word only:
+search
+direct
+"""
+
+    decision = generate_response(routing_prompt).strip().lower()
+
+    if decision == "search":
+        return {"tool": "search_documents", "query": query}
+    elif decision == "direct":
+        return {"tool": "answer_directly", "query": query}
     else:
-        return{
-            "tool":"answer_directly",
-            "query":query
-        }
+        return {"tool": "answer_directly", "query": query}
